@@ -73,7 +73,7 @@ public class App {
         return obj_coll;
     }
 
-    public static void setObj_coll(List<Character> obj_coll) {
+    public void setObj_coll(List<Character> obj_coll) {
         obj_coll = obj_coll;
     }
 

@@ -35,7 +35,6 @@ public class Server extends Thread {
                     app.parseXML();
                     String appResponse = app.cmdResponding(app.objectBuilder(cmdString));
                     System.out.println(appResponse);
-                    app.saveColl();
                     serverInstructions.sendResponse(Response.createResponse(appResponse));
                 }
             }

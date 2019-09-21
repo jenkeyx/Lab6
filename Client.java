@@ -37,7 +37,7 @@ public class Client {
             }
             inputParser();//После -- считываем комманды пользователя
             if (commandLine.equals("import")){
-                clientInstructions.sendCommand(new Command(commandLine,null, );
+                clientInstructions.sendCommand(new Command(commandLine,null,null));
             }
             clientInstructions.sendCommand(new Command(commandLine,null,null));
         }
