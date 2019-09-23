@@ -1,5 +1,6 @@
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -9,9 +10,9 @@ import java.util.*;
 public class Client {
     private static String commandLine = "";
     private static ByteBuffer bf = ByteBuffer.allocate(10000);
+    private static File file = new File("/Users/jenkeyx/Desktop/ITMO/Prog/src/file2.xml");
 
     public static void main(String[] args) {
-        File file = new File("/Users/jenkeyx/Desktop/ITMO/Prog/file.xml");
         SocketChannel sc;
         while (true) {
             try {
@@ -37,9 +38,10 @@ public class Client {
             }
             inputParser();//После -- считываем комманды пользователя
             if (commandLine.equals("import")){
-                clientInstructions.sendCommand(new Command(commandLine,null,null));
+                clientInstructions.sendCommand(new Command(commandLine,null,importFileContent()));
+            }else {
+                clientInstructions.sendCommand(new Command(commandLine, null, null));
             }
-            clientInstructions.sendCommand(new Command(commandLine,null,null));
         }
     }
     private static void inputParser() {
@@ -70,6 +72,20 @@ public class Client {
         commandLine = commandLine.replace("[", "{");
         commandLine = commandLine.replace("]", "}");
         bf.put(commandLine.getBytes());
+    }
+    private static String importFileContent(){
+        try {
+            FileReader fileReader = new FileReader(file);
+            int c;
+            StringBuilder fileStr = new StringBuilder();
+            while ((c = fileReader.read()) != -1) {
+                fileStr.append((char) c);
+            }
+            return fileStr.toString();
+        }catch (IOException e) {
+            System.err.println("Указанный файл не найден");
+            return null;
+        }
     }
 
 }

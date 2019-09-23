@@ -1,18 +1,14 @@
 import App.App;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+
 
 
 public class Server extends Thread {
     private static Socket socket;
     private static int clientNumber;
     private static File xmlFile;
-
-
 
     @Override
     public void run(){
@@ -25,17 +21,24 @@ public class Server extends Thread {
             serverInstructions.sendResponse(Response.createResponse("Соединение с сервером установлено успешно"));
             System.out.println("Клиент подключился к серверу");
             while (true){
-                String cmdString = serverInstructions.receiveCommand().getCommandStr();
-                System.out.println(cmdString);
-                if (cmdString == null || cmdString.equals("quit")){
+                Command cmd = serverInstructions.receiveCommand();
+                System.out.println(cmd.getCommandStr());
+                if (cmd.getCommandStr() == null || cmd.getCommandStr().equals("quit")){
                     disconnectClient(dos);
                     break;
                 }else {
-                    App app = new App(xmlFile,cmdString);
-                    app.parseXML();
-                    String appResponse = app.cmdResponding(app.objectBuilder(cmdString));
-                    System.out.println(appResponse);
-                    serverInstructions.sendResponse(Response.createResponse(appResponse));
+                    if (cmd.getCommandStr().equals("import")){
+                        //todo содержимое файла приходит, но не записывается
+                        FileWriter writer = new FileWriter("file.xml");
+                        writer.write(cmd.getFileContent());
+                        serverInstructions.sendResponse(Response.createResponse("Файл успешно импортирован"));
+                    }else {
+                        App app = new App(xmlFile, cmd.getCommandStr());
+                        app.parseXML();
+                        String appResponse = app.cmdResponding(app.objectBuilder(cmd.getCommandStr()));
+                        System.out.println(appResponse);
+                        serverInstructions.sendResponse(Response.createResponse(appResponse));
+                    }
                 }
             }
         }
@@ -51,6 +54,7 @@ public class Server extends Thread {
         Server.xmlFile = xmlFile;
         start();
     }
+
     private void disconnectClient(DataOutputStream dos) {
         System.out.println("Клиент " + clientNumber + " отсоединился");
         new ServerInstructions(null,dos).sendResponse(Response.createResponse("Клиент отсоединился"));
