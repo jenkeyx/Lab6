@@ -20,21 +20,24 @@ public class Server extends Thread {
 
             serverInstructions.sendResponse(Response.createResponse("Соединение с сервером установлено успешно"));
             System.out.println("Клиент подключился к серверу");
+            int i =0;
+
             while (true){
                 Command cmd = serverInstructions.receiveCommand();
+                App app = new App(xmlFile, cmd.getCommandStr());
                 System.out.println(cmd.getCommandStr());
                 if (cmd.getCommandStr() == null || cmd.getCommandStr().equals("quit")){
                     disconnectClient(dos);
+                    app.saveColl();
                     break;
                 }else {
                     if (cmd.getCommandStr().equals("import")){
-                        //todo содержимое файла приходит, но не записывается
-                        FileWriter writer = new FileWriter("file.xml");
-                        writer.write(cmd.getFileContent());
-                        serverInstructions.sendResponse(Response.createResponse("Файл успешно импортирован"));
+                        serverInstructions.sendResponse(Response.createResponse(app.parseXMLIO(cmd.getFileContent())));
                     }else {
-                        App app = new App(xmlFile, cmd.getCommandStr());
-                        app.parseXML();
+                        if (i == 0) {
+                            System.out.println(app.parseXML());
+                            i++;
+                        }
                         String appResponse = app.cmdResponding(app.objectBuilder(cmd.getCommandStr()));
                         System.out.println(appResponse);
                         serverInstructions.sendResponse(Response.createResponse(appResponse));
