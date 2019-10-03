@@ -16,8 +16,8 @@ import java.io.*;
 import java.util.*;
 
 public class App {
-    private static List<Character> obj_coll = new LinkedList<>();
-    private static File xmlFile = new File("/Users/jenkeyx/Desktop/ITMO/Prog/src/file.xml");
+    private static List<Character> obj_coll = Collections.synchronizedList(new LinkedList<Character>());
+    private static File xmlFile = new File("file.xml");
     private static String commandLine = "";
 
 
@@ -49,14 +49,14 @@ public class App {
 
 
     public String cmdResponding(Character json_obj) {
-        String msg = "";
+        String msg;
 
         switch (commandLine.split("\\{")[0].replaceAll(" ", "")) {
             case ("show"):
                 msg = show();
                 break;
             case ("info"):
-                System.out.println("Программа принимает на вход объекты в формате json и сохраняет в переданный вами файл.\nПример: \n add{ \n{\"name\":\"misha\",\n\"health\":\"2\"}\nshow - показать текущее состояние коллекции\ninfo - перечень комманд\nremove{element} - удалить объект по значению\nadd{element} - добавить объект в коллекцию\nadd_if_max{element}- добавить наибольший по значению\nadd_if_min{element} - добавить наименьший по значению\nquit - завершение работы");
+                msg = "Программа принимает на вход объекты в формате json и сохраняет в переданный вами файл.\nПример: \n add{ \n{\"name\":\"misha\",\n\"health\":\"2\"}\nshow - показать текущее состояние коллекции\ninfo - перечень комманд\nremove{element} - удалить объект по значению\nadd{element} - добавить объект в коллекцию\nadd_if_max{element}- добавить наибольший по значению\nadd_if_min{element} - добавить наименьший по значению\nquit - завершение работы";
                 break;
             case ("remove_greater"):
                 msg = remove_greater(json_obj);
@@ -112,6 +112,7 @@ public class App {
             System.err.println("Файл содержит ошибку");
         }
         obj_coll.clear();
+        System.out.println("Коллекция успешно сохранена");
     }
 
     public String parseXML() {
@@ -138,14 +139,18 @@ public class App {
                 x = Integer.parseInt(coordinate.getElementsByTagName("x").item(0).getTextContent());
                 y = Integer.parseInt(coordinate.getElementsByTagName("y").item(0).getTextContent());
                 z = Integer.parseInt(coordinate.getElementsByTagName("z").item(0).getTextContent());
-                obj_coll.add(new Character(name, health, watching_you, ignore, new Location(x, y, z)));
+                Character character = new Character(name, health, watching_you, ignore, new Location(x, y, z));
+                if (!obj_coll.contains(character)) {
+                    obj_coll.add(character);
+                }
             }
             return "Файл прошел парсинг";
         } catch (Exception e) {
             return "Файл содержит данные с ошибкой в синтаксисе XML или к нему отсутствует доступ";
         }
     }
-    public String parseXMLIO(String fileContent) {
+
+    public String parseXMLIO(String fileContent){
         String name;
         double health;
         boolean watching_you, ignore;
@@ -155,7 +160,7 @@ public class App {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(new ByteArrayInputStream(fileContent.getBytes()));
             NodeList charactersElements = document.getDocumentElement().getElementsByTagName("character");
-
+            obj_coll.clear();
             for (int i = 0; i < charactersElements.getLength(); i++) {
                 Node node = charactersElements.item(i);
                 Element element = (Element) node;
@@ -176,7 +181,6 @@ public class App {
             return "указанный файл содержит ошибку";
         }
     }
-
 
 
     private static Character jsonToObj(String json) {
@@ -234,8 +238,13 @@ public class App {
     private static String add(Character json_obj) {
         if (json_obj != null) {
             if (json_obj.getName() != null) {
-                obj_coll.add(json_obj);
-                return "Объект " + json_obj.getName() + " успешно добавлен в коллекцию";
+                if (!obj_coll.contains(json_obj)) {
+                    obj_coll.add(json_obj);
+                    return "Объект " + json_obj.getName() + " успешно добавлен в коллекцию";
+                }
+                else {
+                    return "Такой объект уже есть в коллекции";
+                }
             } else {
                 return "Безымянный объект в коллекцию добавить нельзя";
             }
@@ -302,5 +311,7 @@ public class App {
         }
 
     }
+
+
 }
 

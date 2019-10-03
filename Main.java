@@ -1,26 +1,25 @@
 
 
-import App.App;
-
 import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+        import java.io.IOException;
+        import java.net.InetAddress;
+        import java.net.ServerSocket;
+        import java.net.Socket;
 
 public class Main {
-    private static File xmlFile = new File("/Users/jenkeyx/Desktop/ITMO/Prog/src/file.xml");
-
+    private static File xmlFile = new File("file.xml");
     public static void main(String[] args) {
+        System.out.println("Сервер запускается...");
         try {
-            int clientNumber= 0;
+            int clientNumber = 0;
             InetAddress inetAddress = InetAddress.getByName("localhost");
-            ServerSocket serverSocket = new ServerSocket(1131, 0, inetAddress);
+            ServerSocket serverSocket = new ServerSocket(1136, 0, inetAddress);
             while (true) {
                 Socket socket = serverSocket.accept();
-                new Server().setSocket(socket,clientNumber++,xmlFile);
+                new Server().setSocket(socket, clientNumber++, xmlFile);
             }
         } catch (IOException e) {
+            e.printStackTrace();
             System.out.println("Хост не найден");
         }
     }

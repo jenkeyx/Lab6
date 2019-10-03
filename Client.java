@@ -27,7 +27,12 @@ public class Client {
             } catch (InterruptedException | IllegalMonitorStateException ignore){
             }
         } //Пытаемся подключиться к серверу
-        ClientInstructions clientInstructions = new ClientInstructions("localhost",1131,sc);
+        ClientInstructions clientInstructions = new ClientInstructions("localhost",1136,sc);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Программа завершена");
+            clientInstructions.sendCommand(new Command("quit",null,null));
+            System.out.println(clientInstructions.reciveResponse().getMessage());
+        }));
         while (true) {
             commandLine = "";
             Response callback = clientInstructions.reciveResponse();

@@ -29,6 +29,7 @@ public class Server extends Thread {
                 if (cmd.getCommandStr() == null || cmd.getCommandStr().equals("quit")){
                     disconnectClient(dos);
                     app.saveColl();
+                    serverInstructions.sendResponse(Response.createResponse("Коллекция успешно сохранена"));
                     break;
                 }else {
                     if (cmd.getCommandStr().equals("import")){
