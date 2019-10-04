@@ -22,8 +22,7 @@ public class ClientInstructions {
             byteBuffer.flip();
             channel.write(byteBuffer);
         }
-        catch (IOException e){
-            e.printStackTrace();
+        catch (IOException ignore){
         }
     }
     Response reciveResponse(){

@@ -78,13 +78,16 @@ public class App {
                 break;
             case "import":
                 msg = importXML(commandLine);
+                break;
+            case "save":
+                saveColl();
             default:
                 msg = ("Вы ввели какую то кракозябру, полный перечень команд info");
         }
         return msg;
     } //действия исходя из переданной команды
 
-    public void saveColl() {
+    public String saveColl() {
         try {
             if (xmlFile.exists()) {
                 try {
@@ -109,10 +112,10 @@ public class App {
             }
         } catch (JAXBException e) {
             System.exit(0);
-            System.err.println("Файл содержит ошибку");
+            return "Файл содержит ошибку";
         }
-        obj_coll.clear();
-        System.out.println("Коллекция успешно сохранена");
+        //obj_coll.clear();
+        return "Коллекция успешно сохранена";
     }
 
     public String parseXML() {

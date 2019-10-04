@@ -20,11 +20,20 @@ public class Server extends Thread {
 
             serverInstructions.sendResponse(Response.createResponse("Соединение с сервером установлено успешно"));
             System.out.println("Клиент подключился к серверу");
-            int i =0;
+            int i = 0;
 
             while (true){
                 Command cmd = serverInstructions.receiveCommand();
                 App app = new App(xmlFile, cmd.getCommandStr());
+                if (i == 0) {
+                    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                        System.out.println("damn rip lol");
+                        app.saveColl();
+                        serverInstructions.sendResponse(Response.createResponse("Сервер недоступен"));
+                    }));
+                    i++;
+                }
+
                 System.out.println(cmd.getCommandStr());
                 if (cmd.getCommandStr() == null || cmd.getCommandStr().equals("quit")){
                     disconnectClient(dos);
@@ -32,16 +41,21 @@ public class Server extends Thread {
                     serverInstructions.sendResponse(Response.createResponse("Коллекция успешно сохранена"));
                     break;
                 }else {
-                    if (cmd.getCommandStr().equals("import")){
-                        serverInstructions.sendResponse(Response.createResponse(app.parseXMLIO(cmd.getFileContent())));
-                    }else {
-                        if (i == 0) {
-                            System.out.println(app.parseXML());
-                            i++;
-                        }
-                        String appResponse = app.cmdResponding(app.objectBuilder(cmd.getCommandStr()));
-                        System.out.println(appResponse);
-                        serverInstructions.sendResponse(Response.createResponse(appResponse));
+                    switch (cmd.getCommandStr()) {
+                        case "import":
+                            serverInstructions.sendResponse(Response.createResponse(app.parseXMLIO(cmd.getFileContent())));
+                            break;
+                        case "save":
+                            serverInstructions.sendResponse(Response.createResponse(app.saveColl()));
+                            break;
+                        case "load":
+                            serverInstructions.sendResponse(Response.createResponse(app.parseXML()));
+                            break;
+                        default:
+                            String appResponse = app.cmdResponding(app.objectBuilder(cmd.getCommandStr()));
+                            System.out.println(appResponse);
+                            serverInstructions.sendResponse(Response.createResponse(appResponse));
+                            break;
                     }
                 }
             }
@@ -57,6 +71,7 @@ public class Server extends Thread {
         Server.clientNumber = clientNumber;
         Server.xmlFile = xmlFile;
         start();
+
     }
 
     private void disconnectClient(DataOutputStream dos) {
@@ -64,4 +79,6 @@ public class Server extends Thread {
         new ServerInstructions(null,dos).sendResponse(Response.createResponse("Клиент отсоединился"));
         this.interrupt();
     }
+
+
 }

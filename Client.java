@@ -17,7 +17,7 @@ public class Client {
         while (true) {
             try {
                 sc = SocketChannel.open();
-                sc.connect(new InetSocketAddress("localhost", 1131));
+                sc.connect(new InetSocketAddress("localhost", 1134));
                 break;
             } catch (IOException | NullPointerException e){
                 System.err.println("Не удалось подключиться к серверу, следующая попытка через 3 с.");
@@ -27,16 +27,23 @@ public class Client {
             } catch (InterruptedException | IllegalMonitorStateException ignore){
             }
         } //Пытаемся подключиться к серверу
-        ClientInstructions clientInstructions = new ClientInstructions("localhost",1136,sc);
+        ClientInstructions clientInstructions = new ClientInstructions("localhost",1134,sc);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Программа завершена");
             clientInstructions.sendCommand(new Command("quit",null,null));
-            System.out.println(clientInstructions.reciveResponse().getMessage());
+            String callback = clientInstructions.reciveResponse().getMessage();
+            System.out.println(callback);
         }));
         while (true) {
             commandLine = "";
             Response callback = clientInstructions.reciveResponse();
             System.out.println(callback.getMessage());
+            if (callback.getMessage().equals("Сервер недоступен")){
+                System.exit(0);
+            }
+            if (callback.getMessage().equals("Сервер завершил свою работу")){
+                System.exit(0);
+            }
             if ((callback.getMessage()).equals("Клиент отсоединился")){
                 clientInstructions.sendCommand(new Command());
                 System.exit(0);

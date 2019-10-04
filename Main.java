@@ -9,17 +9,17 @@ import java.io.File;
 public class Main {
     private static File xmlFile = new File("file.xml");
     public static void main(String[] args) {
-        System.out.println("Сервер запускается...");
+
+        System.out.println("Сервер сервер запущен...");
         try {
             int clientNumber = 0;
             InetAddress inetAddress = InetAddress.getByName("localhost");
-            ServerSocket serverSocket = new ServerSocket(1136, 0, inetAddress);
+            ServerSocket serverSocket = new ServerSocket(1134, 0, inetAddress);
             while (true) {
                 Socket socket = serverSocket.accept();
                 new Server().setSocket(socket, clientNumber++, xmlFile);
             }
         } catch (IOException e) {
-            e.printStackTrace();
             System.out.println("Хост не найден");
         }
     }
