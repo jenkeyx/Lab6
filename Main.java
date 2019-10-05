@@ -14,7 +14,7 @@ public class Main {
         try {
             int clientNumber = 0;
             InetAddress inetAddress = InetAddress.getByName("localhost");
-            ServerSocket serverSocket = new ServerSocket(1134, 0, inetAddress);
+            ServerSocket serverSocket = new ServerSocket(1135, 0, inetAddress);
             while (true) {
                 Socket socket = serverSocket.accept();
                 new Server().setSocket(socket, clientNumber++, xmlFile);

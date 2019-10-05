@@ -17,7 +17,7 @@ public class Client {
         while (true) {
             try {
                 sc = SocketChannel.open();
-                sc.connect(new InetSocketAddress("localhost", 1134));
+                sc.connect(new InetSocketAddress("localhost", 1135));
                 break;
             } catch (IOException | NullPointerException e){
                 System.err.println("Не удалось подключиться к серверу, следующая попытка через 3 с.");
@@ -27,7 +27,7 @@ public class Client {
             } catch (InterruptedException | IllegalMonitorStateException ignore){
             }
         } //Пытаемся подключиться к серверу
-        ClientInstructions clientInstructions = new ClientInstructions("localhost",1134,sc);
+        ClientInstructions clientInstructions = new ClientInstructions("localhost",1135,sc);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Программа завершена");
             clientInstructions.sendCommand(new Command("quit",null,null));
@@ -81,9 +81,14 @@ public class Client {
                 System.exit(0);
             }
         } while (a > b);
-        commandLine = commandLine.replace("[", "{");
-        commandLine = commandLine.replace("]", "}");
-        bf.put(commandLine.getBytes());
+        if (commandLine.contains("import")){
+            file = new File(commandLine.split(" ")[1]);
+            System.out.println(commandLine.split(" ")[1]);
+            commandLine = commandLine.split(" ")[0];
+        }
+            commandLine = commandLine.replace("[", "{");
+            commandLine = commandLine.replace("]", "}");
+            bf.put(commandLine.getBytes());
     }
     private static String importFileContent(){
         try {

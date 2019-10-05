@@ -120,6 +120,7 @@ public class App {
 
     public String parseXML() {
         String name;
+        String dateTime;
         double health;
         boolean watching_you, ignore;
         int x, y, z;
@@ -133,6 +134,8 @@ public class App {
                 Node node = charactersElements.item(i);
                 Element element = (Element) node;
                 name = element.getElementsByTagName("name").item(0).getTextContent();
+                dateTime = element.getElementsByTagName("dateTime").item(0).getTextContent();
+                System.out.println(dateTime);
                 health = Double.parseDouble(element.getElementsByTagName("health").item(0).getTextContent());
                 watching_you = Boolean.parseBoolean(element.getElementsByTagName("watching_you").item(0).getTextContent());
                 ignore = Boolean.parseBoolean(element.getElementsByTagName("ignore").item(0).getTextContent());
@@ -142,19 +145,23 @@ public class App {
                 x = Integer.parseInt(coordinate.getElementsByTagName("x").item(0).getTextContent());
                 y = Integer.parseInt(coordinate.getElementsByTagName("y").item(0).getTextContent());
                 z = Integer.parseInt(coordinate.getElementsByTagName("z").item(0).getTextContent());
-                Character character = new Character(name, health, watching_you, ignore, new Location(x, y, z));
+                Character character = new Character(name, health, watching_you, ignore, new Location(x, y, z), dateTime);
                 if (!obj_coll.contains(character)) {
                     obj_coll.add(character);
                 }
             }
             return "Файл прошел парсинг";
         } catch (Exception e) {
-            return "Файл содержит данные с ошибкой в синтаксисе XML или к нему отсутствует доступ";
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace();
+            return sw.toString();
         }
     }
 
     public String parseXMLIO(String fileContent){
         String name;
+        String dateTime;
         double health;
         boolean watching_you, ignore;
         int x, y, z;
@@ -168,6 +175,7 @@ public class App {
                 Node node = charactersElements.item(i);
                 Element element = (Element) node;
                 name = element.getElementsByTagName("name").item(0).getTextContent();
+                dateTime = element.getElementsByTagName("dateTime").item(0).getTextContent();
                 health = Double.parseDouble(element.getElementsByTagName("health").item(0).getTextContent());
                 watching_you = Boolean.parseBoolean(element.getElementsByTagName("watching_you").item(0).getTextContent());
                 ignore = Boolean.parseBoolean(element.getElementsByTagName("ignore").item(0).getTextContent());
@@ -177,7 +185,7 @@ public class App {
                 x = Integer.parseInt(coordinate.getElementsByTagName("x").item(0).getTextContent());
                 y = Integer.parseInt(coordinate.getElementsByTagName("y").item(0).getTextContent());
                 z = Integer.parseInt(coordinate.getElementsByTagName("z").item(0).getTextContent());
-                obj_coll.add(new Character(name, health, watching_you, ignore, new Location(x, y, z)));
+                obj_coll.add(new Character(name, health, watching_you, ignore, new Location(x, y, z), dateTime));
             }
             return "Файл прошел парсинг";
         } catch (Exception e) {
